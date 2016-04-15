@@ -5,27 +5,22 @@
 /* global variables for the argp lib */
 const char *argp_program_version = APPNAME;
 const char *argp_program_bug_address = AUTHOR_EMAIL;
-
-/* private members */
+/* private static Members */
 constexpr const char ArgParser::doc[];
-constexpr const struct argp_option ArgParser::options[];
-struct argp ArgParser::argp;
+constexpr const struct argp_option  ArgParser::options[];
+std::vector<std::string> ArgParser::argList;  /* arguments list */
+constexpr const struct argp ArgParser::argp;  /* structure for argp parser */
 
 /* Methods implementation */
-ArgParser::ArgParser(int argc, char **argv){
-  this->argc = argc;
-  this->argv = argv;
-  this->argp = { this->options, this->parser_function, NULL, this->doc };
-}
-
-void ArgParser::parse(){
-  argp_parse(&this->argp, this->argc, this->argv, 0, NULL, NULL);
+void ArgParser::parse(int argc, char **argv) {
+  argp_parse(&ArgParser::argp, argc, argv, 0, NULL, NULL);
 }
 
 error_t ArgParser::parser_function(int key, char *arg, struct argp_state *state){
   switch (key) {
   case 'm':
     /* TODO add Maildir to watch list */
+    // ArgParser::argList.push_back(arg);
     break;
   default:
     return ARGP_ERR_UNKNOWN;

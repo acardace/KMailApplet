@@ -2,7 +2,6 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-  ArgParser argParser(argc, argv);
-  argParser.parse();
+  ArgParser::parse(argc, argv);
   return 0;
 }
