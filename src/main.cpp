@@ -33,7 +33,9 @@ int main(int argc, char *argv[]) {
     cerr<<argv[0]<<": this is not a Maildir directory"<<endl;
     return 1;
   }
-  mailWatcher.checkMails();
+  //check if there are unread mails
+  if( mailWatcher.checkMails() )
+    sysTrayIcon.setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
   sysTrayIcon.show();
   return app.exec();
 }

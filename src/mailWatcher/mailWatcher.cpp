@@ -22,11 +22,12 @@ MailWatcher::MailWatcher(QSystemTrayIcon* sysTrayIcon){
   this->sysTrayIcon = sysTrayIcon;
 }
 
-void MailWatcher::slotDirectoryChanged(const QString& path){
+bool MailWatcher::slotDirectoryChanged(const QString& path){
   fs::path pathToWatch(path.toStdString());
   pathToWatch = *find(mailsToWatch.begin(), mailsToWatch.end(), pathToWatch);
   if( fs::is_empty(pathToWatch) ){
     sysTrayIcon->setIcon(QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH)));
+    return false;
   }
   else{
     string msgText = pathToWatch.parent_path().filename().string();
@@ -37,13 +38,17 @@ void MailWatcher::slotDirectoryChanged(const QString& path){
     sysTrayIcon->setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
     sysTrayIcon->showMessage(MailWatcher::SYSTRAY_NAME.c_str(),
       msgText.c_str(), QSystemTrayIcon::Information, 10000);
+    return true;
   }
 }
 
-void MailWatcher::checkMails(){
+bool MailWatcher::checkMails(){
+  bool unreadMails = false;
   for(vector<fs::path>::iterator iter = mailsToWatch.begin(); iter != mailsToWatch.end(); ++iter){
-    slotDirectoryChanged(QString::fromStdString(iter->string()));
+    if( slotDirectoryChanged(QString::fromStdString(iter->string())) )
+      unreadMails = true;
   }
+  return unreadMails;
 }
 
 bool MailWatcher::isMailDir(fs::path& p){

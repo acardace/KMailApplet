@@ -26,10 +26,10 @@ public:
     explicit MailWatcher(QSystemTrayIcon* sysTrayIcon);
     bool addMailDirs(QStringList& qList);
     QSystemTrayIcon* sysTrayIcon;
-    void checkMails();
+    bool checkMails();
 
 public slots:
-  	void slotDirectoryChanged(const QString& path);
+  	bool slotDirectoryChanged(const QString& path);
 
 private:
     bool isMailDir(fs::path& p);
