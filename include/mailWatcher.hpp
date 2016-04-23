@@ -21,17 +21,18 @@ public:
     static const string NO_MAIL_ICON_PATH;
     static const string NEW_MAIL_ICON_PATH;
 
-    string mailToWatch;
+    vector<fs::path> mailsToWatch;
 
     explicit MailWatcher(QSystemTrayIcon* sysTrayIcon);
     bool addMailDirs(QStringList& qList);
     QSystemTrayIcon* sysTrayIcon;
+    void checkMails();
 
 public slots:
   	void slotDirectoryChanged(const QString& path);
 
 private:
-    bool isMailDir(std::string& path);
+    bool isMailDir(fs::path& p);
 };
 
 #endif

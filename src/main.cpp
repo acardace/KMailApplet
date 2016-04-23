@@ -7,8 +7,14 @@
 
 int main(int argc, char *argv[]) {
   /* parse cmd line args */
-  if( ArgParser::parse(argc, argv) ){
-    exit(1);
+  if( ArgParser::parseCmdLine(argc, argv) ){
+    return 1;
+  }
+  /* parse config file */
+  ArgParser::parseConfig();
+  if( ArgParser::argList.empty() ){
+    cerr<<argv[0]<<": no Maildirs provided"<<endl;
+    return 1;
   }
   QApplication app(argc, argv);
   /* create the system tray applet */
@@ -27,6 +33,7 @@ int main(int argc, char *argv[]) {
     cerr<<argv[0]<<": this is not a Maildir directory"<<endl;
     return 1;
   }
+  mailWatcher.checkMails();
   sysTrayIcon.show();
   return app.exec();
 }

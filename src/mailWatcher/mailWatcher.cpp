@@ -9,12 +9,12 @@
 namespace fs = boost::filesystem;
 using namespace std;
 
-const string MailWatcher::NEW_MSG = "New Mail!";
+const string MailWatcher::NEW_MSG = "New Mail in ";
 const string MailWatcher::SYSTRAY_NAME = "KMailApplet";
 const string MailWatcher::CUR_DIR_NAME = "cur";
 const string MailWatcher::NEW_DIR_NAME = "new";
-const string MailWatcher::NO_MAIL_ICON_PATH = "images/mail.png";
-const string MailWatcher::NEW_MAIL_ICON_PATH = "images/newmail.png";
+const string MailWatcher::NO_MAIL_ICON_PATH = "/usr/share/kmailapplet/images/mail.png";
+const string MailWatcher::NEW_MAIL_ICON_PATH = "/usr/share/kmailapplet/images/newmail.png";
 string mailToWatch;
 
 MailWatcher::MailWatcher(QSystemTrayIcon* sysTrayIcon){
@@ -23,21 +23,32 @@ MailWatcher::MailWatcher(QSystemTrayIcon* sysTrayIcon){
 }
 
 void MailWatcher::slotDirectoryChanged(const QString& path){
-  fs::path pathToWatch(mailToWatch);
+  fs::path pathToWatch(path.toStdString());
+  pathToWatch = *find(mailsToWatch.begin(), mailsToWatch.end(), pathToWatch);
   if( fs::is_empty(pathToWatch) ){
     sysTrayIcon->setIcon(QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH)));
   }
   else{
+    string msgText = pathToWatch.parent_path().filename().string();
+    //strip first dot if present
+    if ( msgText.front() == '.' )
+      msgText.erase(0, 1);
+    msgText.insert(0, MailWatcher::NEW_MSG);
     sysTrayIcon->setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
     sysTrayIcon->showMessage(MailWatcher::SYSTRAY_NAME.c_str(),
-      MailWatcher::NEW_MSG.c_str(), QSystemTrayIcon::Information, 10000);
+      msgText.c_str(), QSystemTrayIcon::Information, 10000);
   }
 }
 
-bool MailWatcher::isMailDir(std::string& path){
+void MailWatcher::checkMails(){
+  for(vector<fs::path>::iterator iter = mailsToWatch.begin(); iter != mailsToWatch.end(); ++iter){
+    slotDirectoryChanged(QString::fromStdString(iter->string()));
+  }
+}
+
+bool MailWatcher::isMailDir(fs::path& p){
   bool cur_dir = false;
   bool new_dir = false;
-  fs::path p(path);
   for(fs::directory_iterator iter(p); iter != fs::directory_iterator(); ++iter){
     if( iter->path().filename().string() == MailWatcher::CUR_DIR_NAME )
       cur_dir = true;
@@ -50,12 +61,12 @@ bool MailWatcher::isMailDir(std::string& path){
 bool MailWatcher::addMailDirs(QStringList& qList){
   qList.removeDuplicates();
   for(int i=0; i < qList.size(); ++i){
-    mailToWatch = qList.at(i).toStdString();
+    mailsToWatch.push_back( fs::path( qList.at(i).toStdString() ) );
     //check if this is a real Maildir
-    if(!isMailDir(mailToWatch))
+    if(!isMailDir(mailsToWatch.back()))
       return false;
-    mailToWatch += MailWatcher::NEW_DIR_NAME.c_str();
-    this->addPath( QString::fromStdString(mailToWatch) );
+    mailsToWatch.back().append( MailWatcher::NEW_DIR_NAME );
+    this->addPath( QString::fromStdString(mailsToWatch.back().string()) );
   }
   return true;
 }
