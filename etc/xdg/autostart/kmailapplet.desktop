@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=KMailApplet
+GenericName=Mail Applet
+Type=Application
+NoDisplay=false
+Comment=Mail applet for Maildir format
+OnlyShowIn=KDE;XFCE;GNOME;
+TryExec=KMailApplet
+Exec=KMailApplet
+StartupNotify=true
