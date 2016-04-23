@@ -54,16 +54,18 @@ void ArgParser::parseConfig(){
     while( getline(file, line) ){
       boost::trim(line);
       //skip comments
-      if ( line.front() == '#' )
+      if ( line.front() == '#' ){
         continue;
+      }
       istringstream linestream(line);
       string key;
       if( getline(linestream, key, ArgParser::delimiter) ){
         if( key == ArgParser::mailKey ){
           line.erase(0, line.find_first_of(ArgParser::delimiter)+1 );
           //expand ~ in $HOME
-          if( line.front() == '~' )
+          if( line.front() == '~' ){
             line.replace(line.cbegin(), line.cbegin()+1, getenv("HOME"));
+          }
           ArgParser::argList.push_back( line );
         }
       }
@@ -80,17 +82,17 @@ void ArgParser::parseConfig(){
 error_t ArgParser::parser_function(int key, char *arg, struct argp_state *state){
   switch (key) {
   case 'm':
-    if ( fs::exists(arg) && fs::is_directory(arg) && !fs::is_empty(arg) )
+    if ( fs::exists(arg) && fs::is_directory(arg) && !fs::is_empty(arg) ){
       ArgParser::argList.push_back(arg);
-    else {
+    } else {
       cerr<<arg<<" : no such file or directory"<<endl;
       return 1;
     }
     break;
   case 'c':
-    if ( fs::exists(arg) && fs::is_regular_file(arg) && ArgParser::configFile == "" )
+    if ( fs::exists(arg) && fs::is_regular_file(arg) && ArgParser::configFile == "" ){
       ArgParser::configFile = arg;
-    else {
+    } else {
       cerr<<arg<<" : no such file"<<endl;
       return 1;
     }

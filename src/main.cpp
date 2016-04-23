@@ -50,8 +50,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   //check if there are unread mails
-  if( mailWatcher.checkMails() )
+  if( mailWatcher.checkMails() ){
     sysTrayIcon.setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
+  }
   sysTrayIcon.show();
   return app.exec();
 }

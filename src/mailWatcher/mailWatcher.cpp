@@ -48,8 +48,9 @@ bool MailWatcher::slotDirectoryChanged(const QString& path){
   else{
     string msgText = pathToWatch.parent_path().filename().string();
     //strip first dot if present
-    if ( msgText.front() == '.' )
+    if ( msgText.front() == '.' ){
       msgText.erase(0, 1);
+    }
     msgText.insert(0, MailWatcher::NEW_MSG);
     sysTrayIcon->setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
     sysTrayIcon->showMessage(MailWatcher::SYSTRAY_NAME.c_str(),
@@ -71,10 +72,11 @@ bool MailWatcher::isMailDir(fs::path& p){
   bool cur_dir = false;
   bool new_dir = false;
   for(fs::directory_iterator iter(p); iter != fs::directory_iterator(); ++iter){
-    if( iter->path().filename().string() == MailWatcher::CUR_DIR_NAME )
+    if( iter->path().filename().string() == MailWatcher::CUR_DIR_NAME ){
       cur_dir = true;
-    else if( iter->path().filename().string() == MailWatcher::NEW_DIR_NAME )
+    } else if( iter->path().filename().string() == MailWatcher::NEW_DIR_NAME ){
       new_dir = true;
+    }
   }
   return (new_dir && cur_dir);
 }
@@ -84,8 +86,9 @@ bool MailWatcher::addMailDirs(QStringList& qList){
   for(int i=0; i < qList.size(); ++i){
     mailsToWatch.push_back( fs::path( qList.at(i).toStdString() ) );
     //check if this is a real Maildir
-    if(!isMailDir(mailsToWatch.back()))
+    if(!isMailDir(mailsToWatch.back())){
       return false;
+    }
     mailsToWatch.back().append( MailWatcher::NEW_DIR_NAME );
     this->addPath( QString::fromStdString(mailsToWatch.back().string()) );
   }
