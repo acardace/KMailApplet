@@ -60,7 +60,7 @@ void ArgParser::parseConfig(){
       istringstream linestream(line);
       string key;
       if( getline(linestream, key, ArgParser::delimiter) ){
-        if( key == ArgParser::mailKey ){
+        if( boost::iequals(key, ArgParser::mailKey) ){
           line.erase(0, line.find_first_of(ArgParser::delimiter)+1 );
           //expand ~ in $HOME
           if( line.front() == '~' ){
