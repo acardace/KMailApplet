@@ -1,6 +1,6 @@
 # Maintainer: Antonio Cardace <anto.cardace@gmail.com>
 pkgname=kmailapplet-git
-pkgver=1.0
+pkgver=1.0.r2.g8e48c9e
 pkgrel=1
 pkgdesc="A Mail Applet for the system tray to watch your Maildir box and get notifications whenever there's a new mail."
 arch=('any')
@@ -13,16 +13,21 @@ conflicts=("$pkgname")
 source=("$pkgname::git+https://github.com/ichigo663/KMailApplet.git")
 md5sums=("SKIP")
 
+pkgver() {
+    cd "$srcdir/$pkgname"
+    git describe --long | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/^v//'
+}
+
 build() {
-		cd "$srcdir/$pkgname"
-		qmake -o Makefile build.pro
+    cd "$srcdir/$pkgname"
+    qmake -o Makefile build.pro
     make
 }
 
 package() {
-		cd "$srcdir/$pkgname"
-		cp -r usr etc $pkgdir
-		chmod -R 755 "$pkgdir/usr" "$pkgdir/etc"
-		mkdir -p "$pkgdir/usr/bin/"
-		cp KMailApplet "$pkgdir/usr/bin/"
+    cd "$srcdir/$pkgname"
+    cp -r usr etc $pkgdir
+    chmod -R 755 "$pkgdir/usr" "$pkgdir/etc"
+    mkdir -p "$pkgdir/usr/bin/"
+    cp KMailApplet "$pkgdir/usr/bin/"
 }
