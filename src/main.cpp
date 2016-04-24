@@ -14,45 +14,47 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with KMailApplet.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <argParser.hpp>
-#include <mailWatcher.hpp>
-#include <iostream>
 #include <QApplication>
-#include <QSystemTrayIcon>
 #include <QIcon>
+#include <QSystemTrayIcon>
+#include <argParser.hpp>
+#include <iostream>
+#include <mailWatcher.hpp>
 
 int main(int argc, char *argv[]) {
   /* parse cmd line args */
-  if( ArgParser::parseCmdLine(argc, argv) ){
+  if (ArgParser::parseCmdLine(argc, argv)) {
     return 1;
   }
   /* parse config file */
   ArgParser::parseConfig();
-  if( ArgParser::argList.empty() ){
-    cerr<<argv[0]<<": no Maildirs provided"<<endl;
+  if (ArgParser::argList.empty()) {
+    cerr << argv[0] << ": no Maildirs provided" << endl;
     return 1;
   }
   QApplication app(argc, argv);
   /* create the system tray applet */
-  if ( !QSystemTrayIcon::isSystemTrayAvailable() ){
-    cerr<<argv[0]<<": System tray not available, exiting..."<<endl;
+  if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+    cerr << argv[0] << ": System tray not available, exiting..." << endl;
     return 1;
   }
-  QSystemTrayIcon sysTrayIcon(QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH)));
+  shared_ptr<QSystemTrayIcon> sysTrayIcon(new QSystemTrayIcon(
+      QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH))));
   /* construct list of maildir to be watched */
   QStringList qArgList;
-  for(auto& v: ArgParser::argList){
+  for (auto &v : ArgParser::argList) {
     qArgList.append(QString::fromStdString(v));
   }
-  MailWatcher mailWatcher(&sysTrayIcon);
-  if( !mailWatcher.addMailDirs(qArgList) ){
-    cerr<<argv[0]<<": this is not a Maildir directory"<<endl;
+  MailWatcher mailWatcher(sysTrayIcon);
+  if (!mailWatcher.addMailDirs(qArgList)) {
+    cerr << argv[0] << ": this is not a Maildir directory" << endl;
     return 1;
   }
-  //check if there are unread mails
-  if( mailWatcher.checkMails() ){
-    sysTrayIcon.setIcon(QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
+  // check if there are unread mails
+  if (mailWatcher.checkMails()) {
+    sysTrayIcon->setIcon(
+        QIcon(QString::fromStdString(MailWatcher::NEW_MAIL_ICON_PATH)));
   }
-  sysTrayIcon.show();
+  sysTrayIcon->show();
   return app.exec();
 }

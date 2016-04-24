@@ -19,36 +19,36 @@ along with KMailApplet.  If not, see <http://www.gnu.org/licenses/>.
 #define __MAILAPPLET_WATCHER__
 
 #include <QFileSystemWatcher>
-#include <QStringList>
 #include <QString>
+#include <QStringList>
 #include <QSystemTrayIcon>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 using namespace std;
 
-class MailWatcher :public QFileSystemWatcher {
+class MailWatcher : public QFileSystemWatcher {
   Q_OBJECT
 public:
-    static const string NEW_MSG;
-    static const string SYSTRAY_NAME;
-    static const string CUR_DIR_NAME;
-    static const string NEW_DIR_NAME;
-    static const string NO_MAIL_ICON_PATH;
-    static const string NEW_MAIL_ICON_PATH;
+  static const string NEW_MSG;
+  static const string SYSTRAY_NAME;
+  static const string CUR_DIR_NAME;
+  static const string NEW_DIR_NAME;
+  static const string NO_MAIL_ICON_PATH;
+  static const string NEW_MAIL_ICON_PATH;
 
-    vector<fs::path> mailsToWatch;
+  vector<fs::path> mailsToWatch;
+  shared_ptr<QSystemTrayIcon> sysTrayIcon;
 
-    explicit MailWatcher(QSystemTrayIcon* sysTrayIcon);
-    bool addMailDirs(QStringList& qList);
-    QSystemTrayIcon* sysTrayIcon;
-    bool checkMails();
+  explicit MailWatcher(shared_ptr<QSystemTrayIcon> sysTrayIcon);
+  bool addMailDirs(QStringList &qList);
+  bool checkMails();
 
 public slots:
-  	bool slotDirectoryChanged(const QString& path);
+  bool slotDirectoryChanged(const QString &path);
 
 private:
-    bool isMailDir(fs::path& p);
+  bool isMailDir(fs::path &p);
 };
 
 #endif
