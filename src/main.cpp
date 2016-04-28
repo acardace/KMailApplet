@@ -17,6 +17,7 @@ along with KMailApplet.  If not, see <http://www.gnu.org/licenses/>.
 #include <QApplication>
 #include <QIcon>
 #include <QSystemTrayIcon>
+#include <QtDebug>
 #include <argParser.hpp>
 #include <iostream>
 #include <mailWatcher.hpp>
@@ -29,17 +30,17 @@ int main(int argc, char *argv[]) {
   /* parse config file */
   ArgParser::parseConfig();
   if (ArgParser::argList.empty()) {
-    cerr << argv[0] << ": no Maildirs provided" << endl;
+    qCritical() << argv[0] << ": no Maildirs provided";
     return 1;
   }
   QApplication app(argc, argv);
   /* create the system tray applet */
   if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-    cerr << argv[0] << ": System tray not available, exiting..." << endl;
+    qCritical() << argv[0] << "System tray not available, exiting...";
     return 1;
   }
-  shared_ptr<QSystemTrayIcon> sysTrayIcon(new QSystemTrayIcon(
-      QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH))));
+  auto sysTrayIcon = make_shared<QSystemTrayIcon>(
+      QIcon(QString::fromStdString(MailWatcher::NO_MAIL_ICON_PATH)));
   /* construct list of maildir to be watched */
   QStringList qArgList;
   for (auto &v : ArgParser::argList) {
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
   }
   MailWatcher mailWatcher(sysTrayIcon);
   if (!mailWatcher.addMailDirs(qArgList)) {
-    cerr << argv[0] << ": this is not a Maildir directory" << endl;
+    qCritical() << argv[0] << ": this is not a Maildir directory";
     return 1;
   }
   // check if there are unread mails

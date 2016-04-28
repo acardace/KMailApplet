@@ -14,6 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with KMailApplet.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <QtDebug>
 #include <argParser.hpp>
 #include <argp.h>
 #include <boost/algorithm/string.hpp>
@@ -70,12 +71,12 @@ void ArgParser::parseConfig() {
         }
       }
       if (file.fail() || linestream.fail()) {
-        cerr << "Error: configuration file badly formatted" << endl;
+        qWarning() << "Error: configuration file badly formatted";
         break;
       }
     }
   } else {
-    cerr << "Error: configuration file does not exist" << endl;
+    qWarning() << "Error: configuration file does not exist";
   }
 }
 
@@ -86,7 +87,7 @@ error_t ArgParser::parser_function(int key, char *arg,
     if (fs::exists(arg) && fs::is_directory(arg) && !fs::is_empty(arg)) {
       ArgParser::argList.push_back(arg);
     } else {
-      cerr << arg << " : no such file or directory" << endl;
+      qWarning() << arg << " : no such file or directory";
       return 1;
     }
     break;
@@ -95,7 +96,7 @@ error_t ArgParser::parser_function(int key, char *arg,
         ArgParser::configFile == "") {
       ArgParser::configFile = arg;
     } else {
-      cerr << arg << " : no such file" << endl;
+      qWarning() << arg << " : no such file";
       return 1;
     }
     break;
