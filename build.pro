@@ -5,7 +5,7 @@ SOURCES += src/cmdLineParser/*.cpp
 SOURCES += src/mailWatcher/*.cpp
 
 INCLUDEPATH += include/
-QMAKE_CXXFLAGS += --std=c++11 -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += --std=c++11 -Wall -Wno-unused-parameter -Wno-missing-field-initializers
 LIBS += -lboost_system -lboost_filesystem
 
 QT += core
