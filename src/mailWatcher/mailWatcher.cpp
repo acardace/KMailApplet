@@ -36,8 +36,8 @@ const string MailWatcher::NEW_MAIL_ICON_PATH =
 string mailToWatch;
 
 MailWatcher::MailWatcher(shared_ptr<QSystemTrayIcon> sysTrayIcon) {
-  connect(this, SIGNAL(directoryChanged(const QString)), this,
-          SLOT(slotDirectoryChanged(const QString)));
+  connect(this, SIGNAL(directoryChanged), this,
+          SLOT(slotDirectoryChanged));
   this->sysTrayIcon = sysTrayIcon;
 }
 
